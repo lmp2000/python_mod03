@@ -1,5 +1,6 @@
 import sys
 
+
 def main() -> None:
     print("=== Command Quest ===")
 

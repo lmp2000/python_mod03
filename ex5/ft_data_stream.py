@@ -1,7 +1,14 @@
 from typing import Generator
 
+
 PLAYERS = ["alice", "bob", "charlie", "diana", "eve"]
-ACTIONS = ["killed monster", "found treasure", "leveled up", "got killed", "killed an enemy"]
+ACTIONS = [
+    "killed monster",
+    "found treasure",
+    "leveled up",
+    "got killed",
+    "killed an enemy"
+    ]
 LEVELS = {
     "alice": 5,
     "bob": 12,
@@ -9,6 +16,7 @@ LEVELS = {
     "diana": 4,
     "eve": 1
 }
+
 
 def game_event_generator(n: int) -> Generator:
     for i in range(n):
@@ -49,7 +57,7 @@ def main() -> None:
     game_events = 1000
     processed_events = 0
     treasure_events = 0
-    level_up_events = 0    
+    level_up_events = 0
 
     print('=== Game Data Stream Processor ===\n')
 
@@ -59,7 +67,7 @@ def main() -> None:
 
     for i in range(3):
         event = next(gen)
-        print(f'Event {event["id"]}: Player {event["player"]} ' 
+        print(f'Event {event["id"]}: Player {event["player"]} '
               f'(level {event["level"]}) {event["action"]}')
         processed_events += 1
         if event["action"] == "found treasure":
@@ -95,7 +103,7 @@ def main() -> None:
 
     p_gen = prime_gen()
     p_list = [
-        next(p_gen) for _ in range (5)
+        next(p_gen) for _ in range(5)
     ]
     p_text = ", ".join(str(number) for number in p_list)
 

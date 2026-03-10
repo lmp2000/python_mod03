@@ -6,6 +6,7 @@ class Player:
     def add_achievements(self, *achievements: str) -> None:
         self.achievements.update(achievements)
 
+
 def main() -> None:
     print("=== Achievement Tracker System ===\n")
 
@@ -14,7 +15,9 @@ def main() -> None:
     charlie = Player("Charlie")
     players = [alice, bob, charlie]
 
-    alice.add_achievements('first_kill', 'level_10', 'treasure_hunter', 'speed_demon')
+    alice.add_achievements(
+        'first_kill', 'level_10', 'treasure_hunter', 'speed_demon'
+        )
     bob.add_achievements('first_kill', 'level_10', 'boss_slayer', 'coletor')
     charlie.add_achievements('level_10', 'trasure_hunter', 'boss_slayer',
                              'speed_demon', 'perfectionist')
