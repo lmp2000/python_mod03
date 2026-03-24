@@ -1,59 +1,74 @@
-def inventory_master() -> None:
-    print("=== Inventory System Analysis ===\n")
-    inventory = {
-        "potion": {"name": "potion", "type": "moderate",
-                   "quantity": 5, "value": 5},
-        "armor": {"name": "armor", "type": "scarce",
-                  "quantity": 3, "value": 3},
-        "shield": {"name": "shield", "type": "scarce",
-                   "quantity": 2, "value": 2},
-        "sword": {"name": "sword", "type": "scarce",
-                  "quantity": 1, "value": 1},
-        "helmet": {"name": "helmet", "type": "scarce",
-                   "quantity": 1, "value": 1}
-    }
+import sys
 
-    total = sum(item["quantity"] for item in inventory.values())
-    print(f'Total items in inventory: {total}')
-    print(f'Unique items types: {len(inventory)}')
 
-    print('\n=== Current Inventory ===')
-    for item in inventory.values():
-        if item["quantity"] > 1:
-            print(f'{item["name"]}: {item["quantity"]} '
-                  f'units ({item["quantity"]/total:.1%})')
-        else:
-            print(f'{item["name"]}: {item["quantity"]} '
-                  f'unit ({item["quantity"]/total:.1%})')
+def parse_inventory(args: list[str]) -> tuple[dict[str, int], list[str]]:
+    inventory: dict[str, int] = {}
+    order: list[str] = []
 
-    print('\n=== Inventory Statistics ===')
-    abundant = max(inventory.values(), key=lambda item: item["quantity"])
-    least = min(inventory.values(), key=lambda item: item["quantity"])
-    print(f'Most abundant: {abundant["name"]} ({abundant["quantity"]} units)')
-    print(f'Least abundant: {least["name"]} ({least["quantity"]} unit)')
+    for parameter in args:
+        if parameter.count(":") != 1:
+            print(f"Error - invalid parameter '{parameter}'")
+            continue
 
-    print('\n=== Item Categories ===')
-    categories: dict[str, dict[str, int]] = {}
-    for key, item in inventory.items():
-        cat = item["type"]
-        categories.setdefault(cat, {})[key] = item["quantity"]
-    print(f"Moderate: {categories.get('moderate')}")
-    print(f"Scarce: {categories.get('scarce')}")
+        item, raw_quantity = parameter.split(":")
+        if item in inventory:
+            print(f"Redundant item '{item}' - discarding")
+            continue
 
-    print('\n=== Management Suggestions ===')
-    low_stock = ', '.join(
-        item["name"] for item in inventory.values() if item["quantity"] <= 1
-        )
-    print(f'Restock needed: {low_stock}')
+        try:
+            quantity = int(raw_quantity)
+        except ValueError as error:
+            print(f"Quantity error for '{item}': {error}")
+            continue
 
-    print('\n=== Dictionary Properties Demo ===')
-    items = inventory.keys()
-    keys_text = ", ".join(items)
-    values_text = ", ".join(str(inventory[k]["value"]) for k in inventory)
-    print(f'Dictionary keys: {keys_text}')
-    print(f'Dictionary values: {values_text}')
-    print(f"Sample lookup - 'sword' in inventory: {'sword' in inventory}")
+        inventory[item] = quantity
+        order.append(item)
+
+    return inventory, order
+
+
+def find_most_abundant(inventory: dict[str, int], order: list[str]) -> str:
+    best = order[0]
+    for item in order[1:]:
+        if inventory[item] > inventory[best]:
+            best = item
+    return best
+
+
+def find_least_abundant(inventory: dict[str, int], order: list[str]) -> str:
+    best = order[0]
+    for item in order[1:]:
+        if inventory[item] < inventory[best]:
+            best = item
+    return best
+
+
+def main() -> None:
+    print("=== Inventory System Analysis ===")
+
+    inventory, order = parse_inventory(sys.argv[1:])
+    print(f"Got inventory: {inventory}")
+    print(f"Item list: {list(inventory.keys())}")
+
+    total_quantity = sum(inventory.values())
+    print(f"Total quantity of the {len(inventory)} items: {total_quantity}")
+
+    if total_quantity > 0:
+        for item, quantity in inventory.items():
+            percent = round((quantity * 100) / total_quantity, 1)
+            print(f"Item {item} represents {percent}%")
+
+    if len(order) > 0:
+        most_abundant = find_most_abundant(inventory, order)
+        least_abundant = find_least_abundant(inventory, order)
+        print("Item most abundant: "
+              f"{most_abundant} with quantity {inventory[most_abundant]}")
+        print("Item least abundant: "
+              f"{least_abundant} with quantity {inventory[least_abundant]}")
+
+    inventory.update({"magic_item": 1})
+    print(f"Updated inventory: {inventory}")
 
 
 if __name__ == "__main__":
-    inventory_master()
+    main()

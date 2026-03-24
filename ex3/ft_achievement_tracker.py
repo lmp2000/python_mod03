@@ -1,42 +1,61 @@
-class Player:
-    def __init__(self, name: str) -> None:
-        self.name = name
-        self.achievements = set()
+import random
 
-    def add_achievements(self, *achievements: str) -> None:
-        self.achievements.update(achievements)
+
+ACHIEVEMENTS = [
+    "First Steps",
+    "Speed Runner",
+    "Survivor",
+    "Treasure Hunter",
+    "Master Explorer",
+    "Collector Supreme",
+    "Untouchable",
+    "Boss Slayer",
+    "World Savior",
+    "Crafting Genius",
+    "Strategist",
+    "Sharp Mind",
+    "Unstoppable",
+    "Hidden Path Finder",
+]
+
+
+def gen_player_achievements() -> set[str]:
+    wanted = random.randint(5, 9)
+    picked: set[str] = set()
+    while len(picked) < wanted:
+        picked.add(random.choice(ACHIEVEMENTS))
+    return picked
 
 
 def main() -> None:
-    print("=== Achievement Tracker System ===\n")
+    print("=== Achievement Tracker System ===")
 
-    alice = Player("Alice")
-    bob = Player("Bob")
-    charlie = Player("Charlie")
-    players = [alice, bob, charlie]
+    players = {
+        "Alice": gen_player_achievements(),
+        "Bob": gen_player_achievements(),
+        "Charlie": gen_player_achievements(),
+        "Dylan": gen_player_achievements(),
+    }
 
-    alice.add_achievements(
-        'first_kill', 'level_10', 'treasure_hunter', 'speed_demon'
-        )
-    bob.add_achievements('first_kill', 'level_10', 'boss_slayer', 'coletor')
-    charlie.add_achievements('level_10', 'trasure_hunter', 'boss_slayer',
-                             'speed_demon', 'perfectionist')
+    for name, data in players.items():
+        print(f"Player {name}: {data}")
 
-    for player in players:
-        print(f"Player {player.name} achievements: {player.achievements}")
+    player_sets = list(players.values())
+    all_distinct = set.union(*player_sets)
+    common = set.intersection(*player_sets)
 
-    a, b, c = [player.achievements for player in players]
+    print(f"All distinct achievements: {all_distinct}")
+    print(f"Common achievements: {common}")
 
-    print("\n=== Achievement Analytics ===")
-    print(f'All unique achievements: {a | b | c}')
-    print(f'Total unique achievements: {len(a | b | c)}\n')
+    for name, data in players.items():
+        others_union = set()
+        for other_name, other_data in players.items():
+            if other_name != name:
+                others_union = others_union.union(other_data)
+        print(f"Only {name} has: {data.difference(others_union)}")
 
-    print(f'Common to all players: {a & b & c}')
-    print(f'Rare achievements (1 player): {a ^ b ^ c}\n')
-
-    print(f'Alice vs Bob common: {a & b}')
-    print(f'Alice unique: {a - b}')
-    print(f'Bob unique: {b - a}')
+    for name, data in players.items():
+        print(f"{name} is missing: {set(ACHIEVEMENTS).difference(data)}")
 
 
 if __name__ == "__main__":
